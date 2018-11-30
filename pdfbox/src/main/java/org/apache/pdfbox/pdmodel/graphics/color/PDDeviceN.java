@@ -177,7 +177,7 @@ public class PDDeviceN extends PDSpecialColorSpace
         if (attributes != null)
         {
             return toRGBWithAttributes(raster, targetColorSpace, component);
-        } 
+        }
         else
         {
             return toRGBWithTintTransform(raster, targetColorSpace, component);
@@ -250,7 +250,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             }
 
             // convert single-component raster to RGB
-            BufferedImage rgbComponentImage = componentColorSpace.toRGBImage(componentRaster, null, -1);
+            BufferedImage rgbComponentImage = componentColorSpace.toRGBImage(componentRaster);
             WritableRaster rgbComponentRaster = rgbComponentImage.getRaster();
 
             // combine the RGB component with the RGB composite raster
@@ -262,7 +262,7 @@ public class PDDeviceN extends PDSpecialColorSpace
                 {
                     if (targetColorSpace != null && targetColorSpace != alternateColorSpace) {
                         rgbRaster.setPixel(x, y, new int[] {255, 255, 255});
-    
+
                         continue;
                     }
 
@@ -332,17 +332,17 @@ public class PDDeviceN extends PDSpecialColorSpace
 
                 // convert to alternate color space via tint transform
                 float[] result = tintTransform.eval(src);
-                
+
                 // convert from alternate color space to RGB
                 float[] rgbFloat = alternateColorSpace.toRGB(result);
-                
+
                 for (int s = 0; s < 3; s++)
                 {
                     // scale to 0..255
                     rgb[s] = (int) (rgbFloat[s] * 255f);
-                }                
+                }
                 // must clone because rgb is reused
-                map1.put(key, rgb.clone());                
+                map1.put(key, rgb.clone());
 
                 rgbRaster.setPixel(x, y, rgb);
             }
@@ -518,7 +518,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             array.set(DEVICEN_ATTRIBUTES, attributes.getCOSDictionary());
         }
     }
- 
+
     /**
      * This will get the alternate color space for this separation.
      *

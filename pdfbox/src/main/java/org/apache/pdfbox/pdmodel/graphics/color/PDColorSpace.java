@@ -282,6 +282,18 @@ public abstract class PDColorSpace implements COSObjectable
      */
     public abstract float[] toRGB(float[] value) throws IOException;
 
+
+    /**
+     * Returns the (A)RGB equivalent of the given raster.
+     * @param raster the source raster
+     * @return an (A)RGB buffered image
+     * @throws IOException if the color conversion fails
+     */
+    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    {
+        return toRGBImage(raster, null, -1);
+    }
+
     /**
      * Returns the (A)RGB equivalent of the given raster.
      * @param raster the source raster

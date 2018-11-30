@@ -48,11 +48,11 @@ public class TestSeparations {
         String filename = "FANTASTICCMYK.ai";
         Path filePath = Paths.get(getClass().getResource(INPUT_DIR + "/" + filename).toURI());
         File file = filePath.toFile();
-        PDDocument document = PDDocument.load(file); 
-        PDRectangle cropBox = document.getPage(0).getCropBox();        
+        PDDocument document = PDDocument.load(file);
+        PDRectangle cropBox = document.getPage(0).getCropBox();
         float wScale = maxSize / cropBox.getWidth();
         float hScale = maxSize / cropBox.getHeight();
-        float scale = wScale < hScale ? wScale : hScale;        
+        float scale = wScale < hScale ? wScale : hScale;
 
         if (scale > maxScale) {
             scale = maxScale;
@@ -61,8 +61,6 @@ public class TestSeparations {
         PDPage page = document.getPage(0);
         PDFRenderer renderer = new PDFRenderer(document);
 
-        //renderSeparation(scale, filename, document, renderer, "PANTONE Orange 021 C");
-        
         renderComposite(page, filename, renderer, scale);
 
         renderCMYKSeparations(page, filename, renderer, scale);
@@ -94,7 +92,7 @@ public class TestSeparations {
 
     private void renderSpotColorSeparations(PDPage page, String filename, PDFRenderer renderer, float scale) throws IOException {
         PDSeparation[] separations =  new PDSeparation[renderer.getSeparations().size()];
-        
+
         separations = renderer.getSeparations().toArray(separations);
 
         for (PDSeparation separation : separations) {
