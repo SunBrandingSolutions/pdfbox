@@ -194,7 +194,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
             retval = new PDRectangle(array);
 
             // Make the Bounding Box larger to prevent clipping of the contents
-            int boundaryPadding = 20;
+            final int boundaryPadding = 20;
             retval.setLowerLeftX((float) Math.floor(retval.getLowerLeftX()) - boundaryPadding);
             retval.setLowerLeftY((float)Math.floor(retval.getLowerLeftY()) - boundaryPadding);
             retval.setUpperRightX((float)Math.ceil(retval.getUpperRightX()) + boundaryPadding);
