@@ -17,8 +17,6 @@
 package org.apache.pdfbox.pdmodel.graphics.color;
 
 import java.net.URL;
-import java.util.Arrays;
-
 import org.apache.pdfbox.cos.COSName;
 
 import java.awt.color.ColorSpace;
@@ -39,7 +37,10 @@ import java.io.InputStream;
  */
 public class PDDeviceCMYK extends PDDeviceColorSpace
 {
-    /**  The single instance of this class. */
+    /**
+     *
+     */
+    /** The single instance of this class. */
     public static PDDeviceCMYK INSTANCE;
     static
     {
@@ -49,6 +50,7 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
     private final PDColor initialColor = new PDColor(new float[] { 0, 0, 0, 1 }, this);
     private volatile ICC_ColorSpace awtColorSpace;
     private boolean usePureJavaCMYKConversion = false;
+    private static final int[] WhiteComponents = new int[] { 0, 0, 0, 0 };
 
     protected PDDeviceCMYK()
     {
@@ -165,22 +167,22 @@ public class PDDeviceCMYK extends PDDeviceColorSpace
                 for (int y = startY; y < height + startY; y++)
                 {
                     if (skipColorSpace) {
-                        destRaster.setPixel(x, y, new int[] {0, 0, 0, 0});
+                        destRaster.setPixel(x, y, WhiteComponents);
 
                         continue;
                     }
-                    
+
                     raster.getPixel(x, y, srcValues);
 
                     if (component >= 0) {
-                        for(int i = 0; i < srcValues.length; i++) {
+                        for (int i = 0; i < srcValues.length; i++) {
                             if (i != component) {
                                 srcValues[i] = 0;
                             }
                         }
                     }
 
-                    destRaster.setPixel(x, y, srcValues);                   
+                    destRaster.setPixel(x, y, srcValues);
                 }
             }
 
