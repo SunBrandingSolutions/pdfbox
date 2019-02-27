@@ -49,7 +49,7 @@ final and all fields private.
 
 /**
  * A Form XObject.
- * 
+ *
  * @author Ben Litchfield
  */
 public class PDFormXObject extends PDXObject implements PDContentStream
@@ -86,7 +86,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
         super(stream, COSName.FORM);
         this.cache = cache;
     }
-    
+
     /**
      * Creates a Form Image XObject for writing, in the given document.
      * @param document The current document
@@ -122,17 +122,17 @@ public class PDFormXObject extends PDXObject implements PDContentStream
      */
     public PDTransparencyGroupAttributes getGroup()
     {
-        if( group == null ) 
+        if( group == null )
         {
             COSDictionary dic = (COSDictionary) getCOSObject().getDictionaryObject(COSName.GROUP);
-            if( dic != null ) 
+            if( dic != null )
             {
                 group = new PDTransparencyGroupAttributes(dic);
             }
         }
         return group;
     }
-    
+
     public PDStream getContentStream()
     {
         return new PDStream(getCOSObject());
@@ -147,7 +147,7 @@ public class PDFormXObject extends PDXObject implements PDContentStream
     /**
      * This will get the resources for this Form XObject.
      * This will return null if no resources are available.
-     * 
+     *
      * @return The resources for this Form XObject.
      */
     @Override
@@ -192,6 +192,13 @@ public class PDFormXObject extends PDXObject implements PDContentStream
         if (array != null)
         {
             retval = new PDRectangle(array);
+
+            // Make the Bounding Box larger to prevent clipping of the contents
+            final int boundaryPadding = 20;
+            retval.setLowerLeftX((float) Math.floor(retval.getLowerLeftX()) - boundaryPadding);
+            retval.setLowerLeftY((float)Math.floor(retval.getLowerLeftY()) - boundaryPadding);
+            retval.setUpperRightX((float)Math.ceil(retval.getUpperRightX()) + boundaryPadding);
+            retval.setUpperRightY((float)Math.ceil(retval.getUpperRightY()) + boundaryPadding);
         }
         return retval;
     }

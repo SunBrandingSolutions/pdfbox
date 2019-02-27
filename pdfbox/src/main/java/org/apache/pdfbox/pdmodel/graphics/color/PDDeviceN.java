@@ -170,23 +170,24 @@ public class PDDeviceN extends PDSpecialColorSpace
         }
     }
 
+    // TODO: Implement separation rendering for DeviceN raster images
     @Override
-    public BufferedImage toRGBImage(WritableRaster raster) throws IOException
+    public BufferedImage toRGBImage(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         if (attributes != null)
         {
-            return toRGBWithAttributes(raster);
+            return toRGBWithAttributes(raster, targetColorSpace, component);
         }
         else
         {
-            return toRGBWithTintTransform(raster);
+            return toRGBWithTintTransform(raster, targetColorSpace, component);
         }
     }
 
     //
     // WARNING: this method is performance sensitive, modify with care!
     //
-    private BufferedImage toRGBWithAttributes(WritableRaster raster) throws IOException
+    private BufferedImage toRGBWithAttributes(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         int width = raster.getWidth();
         int height = raster.getHeight();
@@ -213,7 +214,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             {
                 // TODO this happens in the Altona Visual test, is there a better workaround?
                 // missing spot color, fallback to using tintTransform
-                return toRGBWithTintTransform(raster);
+                return toRGBWithTintTransform(raster, targetColorSpace, component);
             }
             else
             {
@@ -259,6 +260,12 @@ public class PDDeviceN extends PDSpecialColorSpace
             {
                 for (int x = 0; x < width; x++)
                 {
+                    if (targetColorSpace != null && targetColorSpace != alternateColorSpace) {
+                        rgbRaster.setPixel(x, y, new int[] {255, 255, 255});
+
+                        continue;
+                    }
+
                     rgbComponentRaster.getPixel(x, y, rgbChannel);
                     rgbRaster.getPixel(x, y, rgbComposite);
 
@@ -278,7 +285,7 @@ public class PDDeviceN extends PDSpecialColorSpace
     //
     // WARNING: this method is performance sensitive, modify with care!
     //
-    private BufferedImage toRGBWithTintTransform(WritableRaster raster) throws IOException
+    private BufferedImage toRGBWithTintTransform(WritableRaster raster, PDColorSpace targetColorSpace, int component) throws IOException
     {
         // cache color mappings
         Map<String, int[]> map1 = new HashMap<>();
@@ -298,6 +305,12 @@ public class PDDeviceN extends PDSpecialColorSpace
         {
             for (int x = 0; x < width; x++)
             {
+                if (targetColorSpace != null && targetColorSpace != alternateColorSpace) {
+                    rgbRaster.setPixel(x, y, new int[] {255, 255, 255});
+
+                    continue;
+                }
+
                 raster.getPixel(x, y, src);
                 // use a string representation as key
                 key = Float.toString(src[0]);
@@ -319,15 +332,15 @@ public class PDDeviceN extends PDSpecialColorSpace
 
                 // convert to alternate color space via tint transform
                 float[] result = tintTransform.eval(src);
-                
+
                 // convert from alternate color space to RGB
                 float[] rgbFloat = alternateColorSpace.toRGB(result);
-                
+
                 for (int s = 0; s < 3; s++)
                 {
                     // scale to 0..255
                     rgb[s] = (int) (rgbFloat[s] * 255f);
-                }                
+                }
                 // must clone because rgb is reused
                 map1.put(key, rgb.clone());
 
@@ -505,7 +518,7 @@ public class PDDeviceN extends PDSpecialColorSpace
             array.set(DEVICEN_ATTRIBUTES, attributes.getCOSDictionary());
         }
     }
- 
+
     /**
      * This will get the alternate color space for this separation.
      *
